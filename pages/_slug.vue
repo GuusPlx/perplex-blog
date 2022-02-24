@@ -1,22 +1,27 @@
 <template>
-  <div class="container mx-auto" v-if="article">
+  <div class="container mx-auto" v-if="articles && articles.data[0]">
     <nuxt-link to="/">Home</nuxt-link>
-    <h1 class="text-8xl font-bold my-10">{{article.data.attributes.title}}</h1>
+    <h1 class="text-8xl font-bold my-10">
+      {{ articles.data[0].attributes.title }}
+    </h1>
     <div>
       <ul>
-        <li>{{article.data.attributes.publishedAt}}</li>
-        <li>{{article.data.attributes.description}}</li>
-        <li>{{article.data.attributes.author.data.attributes.name}}</li>
+        <li>{{ articles.data[0].attributes.publishedAt }}</li>
+        <li>{{ articles.data[0].attributes.description }}</li>
+        <li>{{ articles.data[0].attributes.author.data.attributes.name }}</li>
       </ul>
-      <img v-if="article.data.attributes.image.data.attributes.url" class="w-80" :src="article.data.attributes.image.data.attributes.url" alt="">
+      <img
+        v-if="articles.data[0].attributes.image.data.attributes.url"
+        class="w-80"
+        :src="articles.data[0].attributes.image.data.attributes.url"
+        alt=""
+      />
       <div>
-        {{ article.data.attributes.content }}
+        {{ articles.data[0].attributes.content }}
       </div>
     </div>
   </div>
-  <div v-else>
-    
-  </div>
+  <div v-else></div>
 </template>
 
 <script>
@@ -26,10 +31,10 @@ export default {
   name: 'CharacterCard',
   apollo: {
     // Dynamic querying
-    article: {
+    articles: {
       query: gql`
-        query getArticle($id: ID!) {
-          article(id: $id) {
+        query getArticle($slug: String!) {
+          articles(filters: { slug: { eq: $slug } }) {
             data {
               attributes {
                 title
@@ -65,7 +70,7 @@ export default {
       variables() {
         return {
           // if the route.params.id is null make id = 1
-          id: this.$route.params.id || '1',
+          slug: this.$route.params.slug || 'the-internet-s-own-boy',
         }
       },
     },
